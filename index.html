@@ -1,0 +1,692 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+<!-- *************************Include meta tag to ensure proper rendering and touch zooming ***************************-->
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!--***************************** Include jQuery Mobile stylesheets************************************** -->
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/StyleSheet.css" />
+    <link rel="stylesheet" type="text/css" href="css/maps.css" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!--****************************** Include the jQuery library********************************* -->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<!-- *****************************Include the jQuery Mobile library ************************************************-->
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/JavaScript.js" type="text/javascript"></script>
+    <script src="js/maps.js" type="text/javascript"></script>
+ <!--*********************************Google Maps Library import and API_KEY************************************************************************************-->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9r2hqt5tPNWy-NlTreJg7w-Q68AqrmPw&callback=initMap"
+            type="text/javascript"></script>
+<!--********************************* Functions *********************************************-->
+    <script type="text/javascript">
+    function jsonFlickrFeed(data) {
+        var output3 = '';
+
+        for (var i = 0; i < data.items.length; i++) {
+            var title = data.items[i].title;
+            var desc = data.items[i].description;
+            var res = desc.substr(329,200);
+            var link = data.items[i].media.m.substring(0, 57);
+            var blocktype =
+              ((i % 4) === 3) ? 'd' :
+              ((i % 4) === 2) ? 'c' :
+              ((i % 4) === 1) ? 'b' :
+              'a';
+            output3 += '<div class="ui-block-' + blocktype + '">';
+            output3 += '<a href="#showphoto" data-transition="fade" onclick="showphoto(\'' + link + '\',\'' + title + '\',\'' + res + '\')">';
+            output3 += '<img src="' + link + '_q.jpg" alt="' + title + '">';
+            output3 += '</a>';
+     
+            output3 += '</div>';
+        }
+        
+        $('#photolist').html(output3);        
+
+    }
+
+    function showphoto(link, title, desc) {
+        var output3 = '<a href="#photos" data-transition="fade">';
+        output3 += '<img src="' + link + '_b.jpg" alt="' + title + '">';
+        output3 += '</a>';
+        output3 += desc;
+       
+        $('#myphoto').html(output3);
+    }
+
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+</head>
+<body>
+    <div id="fb-root"></div>
+<!--*****************************************************  Home  ****************************************************-->
+
+    <div data-role="page" data-theme="a" id="home">
+        <div data-role="panel" id="login">
+            <h2>Login</h2>
+            <form method="post" action="demoform.asp">
+              <label for="studentId">Student ID:</label>
+              <input type="text" name="studentId" id="studentId">
+              <label for="studentPass">Password:</label>
+              <input type="password" name="studentPass" id="studentPass">
+               <a onclick="makeRequest()" class="ui-btn" data-transition="slide" id="enterBtn">Login</a>
+            </form>
+
+        </div>
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+            <a onclick="logout()" href="#login" class="ui-btn" id="loginBtn">Login</a>     
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <div data-role="navbar">
+            <ul> 
+                <li><a href="#courses" data-icon="grid" data-transition="slide">Courses</a></li>
+                <li><a onclick="timeTableValidation()" data-icon="calendar" data-transition="slide">Time Table</a></li>                
+            </ul>
+            <ul>
+                <li><a href="#clubs" data-icon="shop" data-transition="slide">Societies</a></li>
+                <li><a href="#sports" data-icon="star" data-transition="slide">Sports</a></li>                
+            </ul>
+            <ul>
+                <li><a onclick="initMap()" href="#location" data-icon="location" data-transition="slide">Location</a></li>
+                <li><a href="#campusMap" data-icon="search" data-transition="slide">Campus Map</a></li>                
+            </ul>
+            <ul>
+                <li><a href="#photos" onclick="jsonFlickrFeed()" data-icon="camera" data-transition="slide">Photos</a></li>            
+            </ul>
+            </div> 
+            
+        </div>
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                <li><a href="#myPopup" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+              </ul>
+            </div>
+            <div data-role="popup" id="myPopup" class="ui-content">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+              <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>                
+              <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+              <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+        
+    </div>
+
+<!--*****************************************************  Courses  ****************************************************-->
+
+    <div data-role="page" data-theme="a" id="courses">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+            
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <form class="ui-filterable">
+              <input id="myFilter" data-type="search">
+            </form>
+            <ul data-role="listview" data-filter="true" data-input="#myFilter" data-autodividers="true" data-inset="true">
+            <li>
+            <div data-role="collapsible">
+              <h1>Applied Social Studies</h1>
+              <p style="white-space:normal">Applied Social Studies helps you create change for others by developing yourself. On this course, students learn how to help others through learning about themselves. This course helps you help others to plan for a positive future.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Apprenticeship & Trades</h1>
+              <p style="white-space:normal">Apprenticeship is a method by which a person works for an employer in a chosen occupation and learns the necessary skills, knowledge and attitudes to become a qualified craftsperson. On successful completion of the apprenticeship, a person will receive a National Craft Certificate. These are recognised nationally and internationally and allow one to continue a career in the chosen occupation.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Business</h1>
+              <p style="white-space:normal">ITB offers business courses at Honours Degree, Ordinary Degree and Higher Certificate levels in the area of Business, International Business, Accounting and Finance, Business with Information Technology, Digital Marketing and Sports Management and Coaching.</p>
+            </div>
+            </li>
+            
+            <li>
+            <div data-role="collapsible">
+              <h1>Community and Youth Development</h1>
+              <p style="white-space:normal">These courses will prepare you to be an active, professional community leader, helping communities to help themselves. You will study a wide range of subjects applied to Community Development and Social Policy Analysis.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Creative Digital Media</h1>
+              <p style="white-space:normal">This dynamic and exciting course will supply all the practical, creative and technical skills you need to succeed in the digital society and economy.
+                To see the type of wonderful work you will get to create check out <a href="http://www.creativedigitalmedia.ie/">creativedigitalmedia.ie</a></p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Early Childhood Care & Education</h1>
+              <p style="white-space:normal">On this course, you’ll work with theory, the psychology of learning, and its practical application through play, art, drama, PE and music as you learn to make a difference in the years that count by understanding children, how they learn and how society shapes them.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Engineering</h1>
+              <p style="white-space:normal">ITB offers engineering courses at Honours Degree, Ordinary Degree and Higher Certificate levels in the area of Electronics and Computer Engineering, Computer Engineering and Mobile Systems and Mechatronic Engineering.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Horticulture</h1>
+              <p style="white-space:normal">Horticulture is a significant contributor to the Irish economy with an output3 of approximately 370 million in 2009 (Food Harvest 2020). The sector has a current retail value of € 1.18bn and employs over 6,000 people on a part/full-time basis. Our hands-on and practical courses are designed to help develop the knowledge, skills and practical experience needed to work in the dynamic and developing horticulture sector.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Languages</h1>
+              <p style="white-space:normal">ITB offers courses at Masters level in Language Education in French, German and English as a Second Language.  These courses are run on a part-time basis and are aimed at teachers of languages in different settings such as primary, secondary and adult education. </p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Sports Management and Coaching</h1>
+              <p style="white-space:normal">The course is designed to teach all the skills of sports management and coaching techniques, combined with the fundamentals of business and enterprise.</p>
+            </div>
+            </li>
+
+            </ul>
+        </div>      
+                
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                <li><a href="#myPopup2" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+              </ul>
+            </div>
+            <div data-role="popup" id="myPopup2" class="ui-content">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+              <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>                
+              <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+              <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+        
+    </div>
+
+<!--************************************************  TimeTable  ****************************************************-->
+    <div data-role="page" data-theme="a" id="timeTable">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+            
+            <a href="#login" class="ui-btn" id="studentName">&nbsp;</a>
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <!--<p id="test">&nbsp;</p>-->
+            <table data-role="table" class="ui-responsive" id="myTable" border="1">
+                <thead>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody id="timeTableArea">
+                    
+                </tbody>
+            </table>            
+        </div>      
+                
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                <li><a href="#myPopup3" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+              </ul>
+            </div>
+            <div data-role="popup" id="myPopup3" class="ui-content">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+              <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>                
+              <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+              <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+        
+    </div>
+
+    <!--**************************************************  Clubs  ****************************************************-->
+    <div data-role="page" data-theme="a" id="clubs">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+            
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <form class="ui-filterable">
+              <input id="myFilter2" data-type="search">
+            </form>
+            <ul data-role="listview" data-filter="true" data-input="#myFilter2" data-autodividers="true" data-inset="true">
+            <li>
+            <div data-role="collapsible">
+              <h1>Computer society</h1>
+              <p style="white-space:normal">An efficiently run society which was the first club or society set up in ITB way back in 1999. This club has 12 computers which runs LAN games on campus in the student common room.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Colours LGBTQI+* Society</h1>
+              <p style="white-space:normal">ITB's Colours Society is an open and safe place for ITB students and staff who identify as LGBTQ+* to come along, hang out and make new friends. We aim to create a safe, friendly, non-judgemental and supportive space for anyone who needs us. </p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Film Society</h1>
+              <p style="white-space:normal">The Film society creates low budget films, last year the film society created a Zombie film which was a fun to watch as it was to make.</p>
+            </div>
+            </li>
+            
+            <li>
+            <div data-role="collapsible">
+              <h1>Golf society</h1>
+              <p style="white-space:normal">The golf society caters for all levels of golfers from beginners to experienced members. The vast majority of their budget is spent on professional tuition to prepare any member for their regular outings all over Dublin and surrounding counties. This club also competes in the CUSAI league and championships provided the competitors have a low handicap.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Creative Digital Media</h1>
+              <p style="white-space:normal">This dynamic and exciting course will supply all the practical, creative and technical skills you need to succeed in the digital society and economy.
+                To see the type of wonderful work you will get to create check out <a href="http://www.creativedigitalmedia.ie/">creativedigitalmedia.ie</a></p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Poker Society</h1>
+              <p style="white-space:normal">This society holds regular poker tournaments both on campus and off. It also travels to other colleges across Ireland to compete in intervarsity competitions. The poker society caters for every level of player.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Piano Society</h1>
+              <p style="white-space:normal">This new society has their own keyboard in the college which is used for lessons and for students to practice on. Students can get lessons once a week by a professional on campus.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Surfing Society</h1>
+              <p style="white-space:normal">SurfSoc ITB is the newest, most exciting, unique, and fun society ITB has to offer. We provide students with the opportunity to learn a new exciting sport and also the chance to get away with college friends on regular trips throughout the year.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Horticulture Society</h1>
+              <p style="white-space:normal">This society is set up for students who enjoy horticulture. We will promote social gatherings for the botanics students.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Photography Society</h1>
+              <p style="white-space:normal">Winning Society of the year 2010 PhotoSoc is one of the largest societies in ITB creating many events during the year. A society for anyone interested in photography from beginners to experienced amateurs. The society organises monthly exhibitions and competitions, days out and occasional weekends away.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Dynamic in Christ Society</h1>
+              <p style="white-space:normal">A fun club that aims to gather chirstians and non-christians together. Share testimonies and enjoy freedom in Christ.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Islamic Society</h1>
+              <p style="white-space:normal">A non political affiliated society is run by a group of ITB students elected by students annually. Their activities/events are planned for the student/staff of ITB.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Geocaching Society</h1>
+              <p style="white-space:normal">Treasure Hunting using GPS Co-ordinates. A list of all Geocaches "treasures" are found on the website geocaching.com. Members of the society will pick a GPS Co-ordinate from the website and try to  find ther cache at the specific spot.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Dance Society</h1>
+              <p style="white-space:normal">The dance society has been set up for people who love to dance. The dance society runs weekly classes in different styles of dance, mainly hip-hop and salsa. The dance society aim to compete in competitions against other colleges.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Airsoft Society</h1>
+              <p style="white-space:normal">The Airsoft society aims to organise subsidised Airsoft events, promote Airsoft as a sport, facilitate the Airsoft community on campus and compete in intervarsity Airsoft events.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Harry Potter Society</h1>
+              <p style="white-space:normal">A hugely popular society in ITB. They have successful bake sales in order to raise funding for themselves. They take part in the intervarsity Tri Wizard Cup where they compete against other colleges with Harry Potter Societies. They also have regular Quidditch training sessions in our Sports Hall.</p>
+            </div>
+            </li>
+
+            </ul>
+        </div>      
+                
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                <li><a href="#myPopup4" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+              </ul>
+            </div>
+            <div data-role="popup" id="myPopup4" class="ui-content">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+              <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>                
+              <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+              <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+        
+    </div>
+
+<!--*****************************************************  Sports  ****************************************************-->
+    <div data-role="page" data-theme="a" id="sports">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+            
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <form class="ui-filterable">
+              <input id="myFilter3" data-type="search">
+            </form>
+            <ul data-role="listview" data-filter="true" data-input="#myFilter3" data-autodividers="true" data-inset="true">
+            <li>
+            <div data-role="collapsible">
+              <h1>GAA</h1>
+              <p style="white-space:normal">One of ITB’s largest clubs consisting of men’s senior football, fresher’s football, ladies football and men’s hurling. It is also one of ITB's most successful clubs with the Men's Senior football team winning the Trench Cup in 2013, the Men's Hurling team winning their league in 2013 and the Ladies GAA team being crowned Lagan Cup Champions in 2012.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Soccer</h1>
+              <p style="white-space:normal">A large club with a great following consisting of two men’s teams and a ladies team. The men’s teams were the 2013 CUFL Division 1 winners while the ladies team won the Division 2 regional league beating Trinity College in their final match.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Futsal</h1>
+              <p style="white-space:normal">Futsal is very popular among students here in ITB. The club organises internal leagues among ITB students each semester in the Sports Hall. This club is becoming more popular and there are also day long tournaments held during both Freshers and RAG week. Each year a representative team is chosen to compete in the intervarsities for ITB.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Pool</h1>
+              <p style="white-space:normal">The pool club organises and promotes internal leagues on campus each semester. The pool tables are situated in the student common room and are available to all students at all times. Out of these leagues an ITB team is chosen to represent the college in the CUSAI league. ITB Men’s Pool team claimed the 2013 All-Ireland Colleges Pool Championships.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Basketball</h1>
+              <p style="white-space:normal">The club consists of both men’s and ladies teams who compete in the ICBA leagues and cups. Members are coached twice a week by an experienced national league basketball coach.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Swimming</h1>
+              <p style="white-space:normal">Club members train twice a week with an experienced coach to compete in intervarsity events at the National Aquatic Centre (NAC) which includes water slides, diving boards and a 50 metre pool.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Athletics Club</h1>
+              <p style="white-space:normal">The athletics club was re-introduced to the college in 2010 with twelve new members. Simon Ryan took home a bronze medal from the national cross country championships held in Cork. Students compete in many different competitions throughout the year including the Intervarsities.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Mixed Martial Arts</h1>
+              <p style="white-space:normal">The mixed martial arts club train once a week on campus with a qualified instructor. Levels range from beginners to advanced with the more experienced members of the clubs competing for the college in intervarsity events</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Rugby</h1>
+              <p style="white-space:normal">This club is becoming more and more popular every year. Members train and play home games in Coolmine. They currently play in the Division 3 league. The club caters for beginners to experienced players who have represented both Ireland and Leinster at various levels.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Badminton</h1>
+              <p style="white-space:normal">One of our newest clubs with both men’s and ladies teams. They compete at intervarsity level where colleges are divided up into divisions and play in a blitz format league four times a year. Our teams reached the finals which were held in Belfast last year.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Boxing</h1>
+              <p style="white-space:normal">This is one of our newest clubs with three new members that competed for the college last year. They took part in the novice and intermediate championships taking home two silver medals.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Golf</h1>
+              <p style="white-space:normal">This society caters for the elite golfers in the college. The top players are picked to represent the college on a national stage. Last year our team won the shield event in Carton House.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Olympic Handball</h1>
+              <p style="white-space:normal">This club is only newly set up and caters for all levels. CUSAI run competitions on a blitz format against other colleges each semester. Last year the college played in three of these taking home a bronze medal.</p>
+            </div>
+            </li>
+
+            <li>
+            <div data-role="collapsible">
+              <h1>Ski Club</h1>
+              <p style="white-space:normal">Students travel to a ski resort around January / February where they receive ski lessons for those who need it. Places the college has travelled to before include Andorra. The students range from beginners to advanced. Everybody is welcome to join.</p>
+            </div>
+            </li>
+
+            </ul>
+        </div>      
+                
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                <li><a href="#myPopup5" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+              </ul>
+            </div>
+            <div data-role="popup" id="myPopup5" class="ui-content">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+              <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>                
+              <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+              <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+    </div>
+
+<!--*****************************************************  Location  ****************************************************-->
+    <div data-role="page" data-theme="a" id="location">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <div onload="initMap()" id="map"></div>
+        </div>
+
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                    <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                    <li><a href="#myPopup6" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+                </ul>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+    </div>
+
+
+<!--*************************************************  Campus Map  ****************************************************-->
+    <div data-role="page" data-theme="a" id="campusMap">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <img alt="campusMap" src="img/ITBCampusMapfinal.jpg" />
+        </div>
+
+        <!--footer-->
+        <div data-role="footer">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                <li><a href="#myPopup6" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+              </ul>
+            </div>
+            <div data-role="popup" id="myPopup6" class="ui-content">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+              <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>
+              <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+              <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+            </div>
+            <img alt="itbLogo" src="img/itbFooter.png" />
+        </div>
+    </div>
+
+<!--*****************************************************  Photos  ****************************************************-->
+
+    <div data-role="page" data-theme="a" id="photos">
+        <!--header-->
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+        </div>
+        <!--main page-->
+        <div data-role="main" class="ui-content">
+            <div class="ui-grid-c" id="photolist"></div>
+        </div>
+            <!--footer-->
+            <div data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                        <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                        <li><a href="#myPopup7" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+                    </ul>
+                </div>
+                <div data-role="popup" id="myPopup7" class="ui-content">
+                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                    <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+                    <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>
+                    <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+                    <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                    <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+                </div>
+                <img alt="itbLogo" src="img/itbFooter.png" />
+            </div>
+<!--********************************************Flicker Feed *******************************************************************-->
+<script src="http://api.flickr.com/services/feeds/photos_public.gne?id=149498578@N06&format=json&tags=photosryan"></script>
+    </div>
+    <div id="showphoto" data-role="page">
+        <div data-role="header">
+            <h1><a href="#home" data-transition="slide"><img alt="itbLogo" src="img/itb.png" /></a></h1>
+        </div>
+        <div data-role="content">
+            <div id="myphoto"></div>
+            <!--footer-->
+            <div data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#" data-icon="arrow-l" data-rel="back">Back</a></li>
+                        <li><a href="#home" data-icon="home" data-transition="slide">Home</a></li>
+                        <li><a href="#myPopup7" data-icon="info" data-rel="popup" data-position-to="window">Info</a></li>
+                    </ul>
+                </div>
+                <div data-role="popup" id="myPopup7" class="ui-content">
+                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                    <p>The Institute of Technology, Blanchardstown (ITB),(Irish: Institiúid Teicneolaíochta Baile Bhlainséir) established in 1999, is (as of 2010), the last-founded Institute of Technology in Ireland. It is located within the Business & Technology Park on Blanchardstown Road North, about 15 km from Dublin City and close to the N3 (Navan Road).</p>
+                    <p>ITB provides full-time and part-time higher education courses in Applied Social Studies, Business, Computing, Digital Media, Engineering, Horticulture, Languages, Social and Community Development, Sports Management and Early Childhood Care & Education at higher certificate, ordinary degree, honours degree and Master's Degree levels.</p>
+                    <a href="https://www.facebook.com/itbdublin/" ><p class="fa fa-facebook-square" style="font-size:48px"></p></a>
+                    <a href="https://twitter.com/itbdublin" ><p class="fa fa-twitter-square" style="font-size:48px"></p></a>
+                    <div class="fb-page" data-href="https://www.facebook.com/itbdublin/" data-tabs="timeline" data-width="180" data-height="70" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/itbdublin/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/itbdublin/">Institute of Technology Blanchardstown</a></blockquote></div>
+                </div>
+                <img alt="itbLogo" src="img/itbFooter.png" />
+            </div>
+        </div><!-- content -->
+    </div><!-- show photo page -->
+</body>
+</html>

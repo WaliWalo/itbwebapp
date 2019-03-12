@@ -1,0 +1,102 @@
+﻿{
+  "timetable": [
+    {
+      "username": "b00100125",
+      "monday": [
+        {
+          "time": "0900-1100", "subject": "Parallel Computing Lab", "classroom": "E124"
+        },
+        {
+          "time": "1100-1300", "subject": "Rich Web Application Lab", "classroom": "E104"
+        },
+        {
+          "time": "1400-1600", "subject": "Advanced Switching & Routing Lab", "classroom": "E124"
+        }
+      ],
+      "tuesday": [
+        {
+          "time":  " ", "subject": " ", "classroom": " "
+        }
+      ],
+      "wednesday": [
+        { 
+          "time":  " ", "subject": " ", "classroom": " "
+        }
+      ],
+      "thursday": [
+        {
+          "time":  " ", "subject": " ", "classroom": " "
+        }
+      ],
+      "friday": [
+        {
+          "time":  " ", "subject": " ", "classroom": " "
+        }
+      ]
+    },
+    {
+      "username": "admin",
+      "monday": [
+        {
+          "time": "0900-1100",
+          "subject": "Parallel Computing Lab",
+          "classroom": "E124"
+        },
+        {
+          "time": "1100-1300",
+          "subject": "Rich Web Application Lab",
+          "classroom": "E104"
+        },
+        {
+          "time": "1400-1600",
+          "subject": "Advanced Switching & Routing Lab",
+          "classroom": "E124"
+        }
+      ],
+      "tuesday": [
+        {
+          "time": "1000-1200",
+          "subject": "Project Skills Lecture",
+          "classroom": "E124"
+        },
+        {
+          "time": "1300-1500",
+          "subject": "Project Skills Lab",
+          "classroom": "A10"
+        },
+        {
+          "time": "1500-1700",
+          "subject": "Data Switching and Routing Lecture",
+          "classroom": "E105"
+        }
+      ],
+      "wednesday": [
+        {
+          "time": "1400-1600",
+          "subject": "Data Structure and Algorithm Lab",
+          "classroom": "E106"
+        }
+      ],
+      "thursday": [
+        {
+          "time": "1100-1300",
+          "subject": "Rich Web Application Lecture",
+          "classroom": "E032"
+        },
+        {
+          "time": "1400-1600",
+          "subject": "Data Structure and Algorithm Lecture",
+          "classroom": "E214"
+        }
+      ],
+      "friday": [
+        {
+          "time": "0900-1100",
+          "subject": "Parallel Computing Lecture",
+          "classroom": "E214"
+        }
+      ]
+    }
+  ]
+
+}
